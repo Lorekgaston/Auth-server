@@ -17,15 +17,23 @@ exports.getAllUser = async (req, res) => {
     });
   }
 };
-// exports.getUser = async () => {
-//   try {
-//     const user = await User.findById();
-
-//     res.status(200).json({
-//       status: 'succses',
-//       user: {
-
-//       }
-//     });
-//   } catch (err) {}
-// };
+exports.getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user);
+    if (!user) {
+      res.status(404).json({
+        status: ' fail',
+        message: 'No user found with that ID'
+      });
+    }
+    res.status(200).json({
+      status: 'succses',
+      user
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: 'internal erro',
+      message: err.message
+    });
+  }
+};

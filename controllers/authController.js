@@ -6,11 +6,16 @@ const signToken = id => {
     expiresIn: process.env.JWT_EXPIRES_IN
   });
 };
+// const refreshToken = (id, count) => {
+//   return jwt.sign({ id: id, count: count }, process.env.JWT_SECRET, {
+//     expiresIn: process.env.JWT_REFRESH_EXPIRES_IN
+//   });
+// };
 
 exports.signup = async (req, res) => {
   try {
-    const { email, userName } = await req.body;
-    const userExist = await User.findOne({ userName });
+    const { email } = await req.body;
+    // const userExist = await User.findOne({ userName });
     const emailExist = await User.findOne({ email });
 
     if (emailExist) {
@@ -19,12 +24,12 @@ exports.signup = async (req, res) => {
         message: 'This Email is already in use'
       });
     }
-    if (userExist) {
-      return res.status(400).json({
-        status: 'fail',
-        message: 'This UserName is already in use'
-      });
-    }
+    // if (userExist) {
+    //   return res.status(400).json({
+    //     status: 'fail',
+    //     message: 'This UserName is already in use'
+    //   });
+    // }
     const newUser = await User.create({
       userName: req.body.userName,
       email: req.body.email,
@@ -37,9 +42,7 @@ exports.signup = async (req, res) => {
     res.status(201).json({
       status: 'success',
       token,
-      data: {
-        user: newUser
-      }
+      user: newUser
     });
   } catch (err) {
     res.status(500).json({
@@ -80,11 +83,34 @@ exports.login = async (req, res) => {
     const token = signToken(user._id);
     res.status(200).json({
       status: 'success',
-      token
+      token,
+      user
     });
   } catch (err) {
     res.status(500).json({
       err
     });
+  }
+};
+
+exports.validToken = async (req, res) => {
+  try {
+    let token;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) return res.json(false);
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    if (!verified) return res.json(false);
+
+    const user = await User.findById(verified.id);
+    if (!user) return res.json(false);
+    console.log(token);
+    return res.json(true);
+  } catch (err) {
+    res.status(500).json({ err });
   }
 };

@@ -8,6 +8,9 @@ const userSchema = new mongoose.Schema({
     required: [true, 'You must choose a UserName'],
     unique: true
   },
+  count: {
+    type: Number
+  },
   email: {
     type: String,
     required: [true, 'Enter Your email'],
@@ -25,8 +28,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please choose a passord'],
     minlength: 8,
-    maxlength: 40
-    //select: false
+    maxlength: 40,
+    select: false
   },
   passwordConfirm: {
     type: String,
@@ -36,8 +39,8 @@ const userSchema = new mongoose.Schema({
         return el === this.password;
       },
       message: 'Password dont match'
-    }
-    //   select: false
+    },
+    select: false
   }
 });
 
