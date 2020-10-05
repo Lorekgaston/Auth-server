@@ -18,7 +18,7 @@ const auth = async (req, res, next) => {
     }
     const verified = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
     if (!verified) {
-      return res.status(401).json({
+      return res.status(403).json({
         message: 'invalid credentials'
       });
     }

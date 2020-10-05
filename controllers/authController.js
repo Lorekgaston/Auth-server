@@ -56,18 +56,18 @@ exports.login = async (req, res) => {
     const { email, password } = await req.body;
     const user = await User.findOne({ email }).select('+password');
 
-    if (!email) {
-      return res.status(400).json({
-        status: 'fail',
-        message: 'Enter your Email Adress'
-      });
-    }
-    if (!password) {
-      return res.status(400).json({
-        status: 'fail',
-        message: 'Enter your Password'
-      });
-    }
+    // if (!email) {
+    //   return res.status(400).json({
+    //     status: 'fail',
+    //     message: 'Enter your Email Adress'
+    //   });
+    // }
+    // if (!password) {
+    //   return res.status(400).json({
+    //     status: 'fail',
+    //     message: 'Enter your Password'
+    //   });
+    // }
     if (!user) {
       return res.status(401).json({
         status: 'fail',
@@ -108,7 +108,6 @@ exports.validToken = async (req, res) => {
 
     const user = await User.findById(verified.id);
     if (!user) return res.json(false);
-    console.log(token);
     return res.json(true);
   } catch (err) {
     res.status(500).json({ err });
