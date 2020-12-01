@@ -34,6 +34,7 @@ exports.signup = async (req, res) => {
       userName: req.body.userName,
       email: req.body.email,
       role: req.body.role,
+      photo: req.body.photo,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm
     });

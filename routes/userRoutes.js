@@ -12,9 +12,6 @@ router.route('/login').post(authController.login);
 router.route('/tokenIsvalid').post(authController.validToken);
 
 router.route('/user').get(auth, userController.getUser);
-router.route('/upload').post(userController.uploadImage);
 router.route('/updateUser').patch(auth, userController.updateUser);
-
-// router.route('/').get(userController.getUser);
 
 module.exports = router;

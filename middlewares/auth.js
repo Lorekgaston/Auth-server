@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
+const User = require('../models/user');
 
 const auth = async (req, res, next) => {
   try {
@@ -22,7 +23,14 @@ const auth = async (req, res, next) => {
         message: 'invalid credentials'
       });
     }
-    req.user = verified.id;
+    const currentUser = await User.findById(verified.id);
+    if (!currentUser) {
+      res.status(400).json({
+        message: 'The user belonging to the token no longer exist'
+      });
+    }
+    req.user = currentUser;
+    console.log(req.user);
   } catch (err) {
     res.status(500).json({
       error: err.message
