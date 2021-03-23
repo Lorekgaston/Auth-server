@@ -57,35 +57,31 @@ exports.login = async (req, res) => {
     const { email, password } = await req.body;
     const user = await User.findOne({ email }).select('+password');
 
-    // if (!email) {
-    //   return res.status(400).json({
-    //     status: 'fail',
-    //     message: 'Enter your Email Adress'
-    //   });
-    // }
-    // if (!password) {
-    //   return res.status(400).json({
-    //     status: 'fail',
-    //     message: 'Enter your Password'
-    //   });
-    // }
     if (!user) {
       return res.status(401).json({
         status: 'fail',
-        message: 'The email you’ve entered doesn’t match any account.'
+        message:
+          'The email you entered isn’t connected to an account, please try again'
       });
     }
     if (!(await user.checkPassword(password, user.password))) {
       return res.status(401).json({
         status: 'fail',
-        message: 'Incorrect Pasword, Try again'
+        message: 'Incorrect password, please try again'
       });
     }
     const token = signToken(user._id);
+    console.log(req.body);
     res.status(200).json({
       status: 'success',
       token,
-      user
+      user: {
+        _id: user._id,
+        email: user.email,
+        photo: user.photo,
+        role: user.role,
+        userName: user.userName
+      }
     });
   } catch (err) {
     res.status(500).json({
@@ -95,6 +91,7 @@ exports.login = async (req, res) => {
 };
 
 exports.validToken = async (req, res) => {
+  console.log(req.body);
   try {
     let token;
     if (
