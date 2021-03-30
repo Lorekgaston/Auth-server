@@ -14,22 +14,28 @@ const signToken = id => {
 
 exports.signup = async (req, res) => {
   try {
-    const { email } = await req.body;
-    // const userExist = await User.findOne({ userName });
+    const { userName, email, password, passwordConfirm } = await req.body;
+    const userExist = await User.findOne({ userName });
     const emailExist = await User.findOne({ email });
 
     if (emailExist) {
       return res.status(400).json({
         status: 'fail',
-        message: 'This Email is already in use'
+        message: 'This email is already in use'
       });
     }
-    // if (userExist) {
-    //   return res.status(400).json({
-    //     status: 'fail',
-    //     message: 'This UserName is already in use'
-    //   });
-    // }
+    if (userExist) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'This username is already in use'
+      });
+    }
+    if (password !== passwordConfirm) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Passwords are not the same'
+      });
+    }
     const newUser = await User.create({
       userName: req.body.userName,
       email: req.body.email,
@@ -39,10 +45,8 @@ exports.signup = async (req, res) => {
       passwordConfirm: req.body.passwordConfirm
     });
 
-    const token = signToken(newUser._id);
     res.status(201).json({
       status: 'success',
-      token,
       user: newUser
     });
   } catch (err) {
@@ -54,20 +58,19 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = await req.body;
-    const user = await User.findOne({ email }).select('+password');
+    const { userName, password } = await req.body;
+    const user = await User.findOne({ userName }).select('+password');
 
     if (!user) {
       return res.status(401).json({
         status: 'fail',
-        message:
-          'The email you entered isn’t connected to an account, please try again'
+        message: 'This username does not exist'
       });
     }
     if (!(await user.checkPassword(password, user.password))) {
       return res.status(401).json({
         status: 'fail',
-        message: 'Incorrect password, please try again'
+        message: 'Invalid password, please try again'
       });
     }
     const token = signToken(user._id);

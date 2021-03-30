@@ -6,9 +6,7 @@ exports.getAllUsers = async (req, res) => {
     res.status(200).json({
       status: 'success',
       results: users.length,
-      data: {
-        users
-      }
+      users
     });
   } catch (err) {
     res.status(400).json({
@@ -34,7 +32,7 @@ exports.getUser = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({
-      status: 'internal erro',
+      status: 'internal error',
       message: err.message
     });
   }
